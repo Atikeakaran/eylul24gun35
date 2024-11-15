@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konuşulanı Yazıya Dök</title>
+    <style>
+        body {
+            background-color: gray;
+        }
+
+        textarea {
+            font-size: 2em;
+            width: 100%;
+            background-color: bisque;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Konuşmayı Metne Dönüştür</h1>
+    <button id="baslat">Dinlemeye Başla </button>
+    <textarea id="sonuc" cols="40" rows="5"></textarea>
+    <br><br>
+    Durdurmak için avokado demelisiniz!
+    <script>
+
+        const btnBaslat = document.getElementById("baslat");
+        const txtSonuc = document.getElementById("sonuc");
+        let dinliyorMu = false;
+        //Web Speech API
+        //window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const sesTanima = new SR();
+        sesTanima.continuous = true; //surekli dinle
+        sesTanima.lang = "tr-TR";
+        //btnBaslat.onclick = () => sesTanima.start();
+        btnBaslat.onclick = function () {
+            if (dinliyorMu) {
+                sesTanima.stop();
+                btnBaslat.textContent = "Dinlemeye başla";
+            } else {
+                sesTanima.start();
+                btnBaslat.textContent = "Dinlemeyi Durdur";
+            }
+            dinliyorMu = !dinliyorMu;
+        };
+        // SONUCLARIN ELDEN GEÇİRİLMESİ
+        sesTanima.onresult = function (event) {
+            let parcalar = event.results;
+            console.log(parcalar);
+            let sonKonusulan = parcalar[parcalar.length - 1][0].transcript;
+            if (sonKonusulan.includes("avokado")) {
+                btnBaslat.click();
+                return;
+            }
+            txtSonuc.value += sonKonusulan;
+            txtSonuc.scrollTop = txtSonuc.scrollHeight;
+
+
+        };
+    </script>
+</body>
+
+</html>
